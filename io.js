@@ -11,6 +11,10 @@ const PORT = process.env.PORT || 4500
 
 let clients = {}
 
+app.get('/', (req, res) => {
+    res.send('hello')
+})
+
 io.on('connection', socket => {
     console.log(`User: ${socket.id}, has connected`)
 

@@ -51,6 +51,7 @@ io.on('connection', socket => {
                 break
             }
         }
+        io.emit('userLeft', clients)
         console.log(`User: ${socket.id}, has disconnected`)
         console.log('Clients: ', clients)
     })

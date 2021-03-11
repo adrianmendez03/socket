@@ -21,6 +21,7 @@ io.on('connection', socket => {
     socket.on('saveUser', userId => {
         clients[userId] = socket.id 
         console.log('Clients: ', clients)
+        io.emit('newUser', clients)
     })
 
     socket.on('joinRoom', roomId => {

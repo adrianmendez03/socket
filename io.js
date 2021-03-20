@@ -9,6 +9,8 @@ const io = require('socket.io')(http, {
 })
 const PORT = process.env.PORT || 4500
 
+// DICTIONARY TO ASSOSCIATE SOCKET IDS WITH USER IDS
+// USING A DICTIONARY BECAUSE IT'S FASTER TO LOOK FOR ENTRIES
 let clients = {}
 
 app.get('/', (req, res) => {
@@ -18,12 +20,15 @@ app.get('/', (req, res) => {
 io.on('connection', socket => {
     console.log(`User: ${socket.id}, has connected`)
 
+    // WHEN USER SIGNS IN THE CLIENT SOCKET EMITS 'saveUser' WITH THE USER ID
+    // THIS EVENT LISTENER ADDS THE USERID KEY WITH SOCKETID VALUE TO THE CLIENTS DICTIONARY
     socket.on('saveUser', userId => {
         clients[userId] = socket.id 
         console.log('Clients: ', clients)
         io.emit('newUser', clients)
     })
 
+    // ADDS A SOCKET TO A ROOM
     socket.on('joinRoom', roomId => {
         socket.join(roomId)
         console.log(`User: ${socket.id}, has joined Room: ${roomId}`)
@@ -32,11 +37,13 @@ io.on('connection', socket => {
         })
     })
 
+    // REMOVES SOCKET FROM ROOM
     socket.on('leaveRoom', roomId => {
         socket.leave(roomId)
         console.log(`User: ${socket.id}, has left Room: ${roomId}`)
     })
 
+    // EMITS A NOTIFICATION TO A USER IF THEY ARE FOUND IN THE CLIENTS DICTIONARY
     socket.on('notification', userId => {
         console.log(`Sending notification to ${userId}`)
         if (clients[userId]) {
@@ -44,6 +51,7 @@ io.on('connection', socket => {
         }
     })
 
+    // LOOPS THROUGH THE CLIENTS KEYS AND REMOVES THE DISCONNECTING SOCKET
     socket.on('disconnect', () => {
         for (let key in clients) {
             if (clients[key] === socket.id) {

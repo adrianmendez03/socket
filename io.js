@@ -53,13 +53,15 @@ io.on("connection", (socket) => {
 
   socket.on("isOnline", (userId, personId) => {
     console.log(`User: ${userId} is asking if Person: ${personId} is online.`)
+    let response = null
     if (clients[personId]) {
       console.log("Yes they are.")
-      io.to(clients[userId]).emit("yes")
+      response = "yes"
     } else {
       console.log("No they are not.")
-      io.to(clients[userId]).emit("no")
+      response = "no"
     }
+    io.to(clients[userId]).emit("response", response)
   })
 
   // LOOPS THROUGH THE CLIENTS KEYS AND REMOVES THE DISCONNECTING SOCKET
